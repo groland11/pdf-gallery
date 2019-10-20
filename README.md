@@ -43,4 +43,6 @@ Usage: pdf-gallery.sh [-m] [-r] [-f] [-k] [-e <max_errors>] [-q] [-d] [-h]
 ```
 
 ## Screenshots
-
+<div align="center">
+    <img src="/screenshots/screen1.png" width="400px"</img>
+</div>
