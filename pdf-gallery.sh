@@ -121,7 +121,7 @@ function do_convert() {
 			pdftk "${INFILE}" cat 1 output "${TMPFILE}"
 			RET=$?
 			if [[ ${RET} -eq 0 ]] ; then
-				convert "${TMPFILE}" -adaptive-resize 400x1000 "${OUTFILE}"
+				convert "${TMPFILE}" -define jpeg:size=1200x1500 -thumbnail '400x500' -background white -alpha remove "${OUTFILE}"
 				RET=$?
 				if [[ ${RET} -ne 0 ]] ; then
 					log "ERROR: Unable to convert file \"${INFILE}\" (convert=${RET})"
@@ -261,6 +261,7 @@ cat <<EOF >${IDXHTML}
 		}
 		td {
 			text-align: center;
+			vertical-align: top;
 		}
 	</style>
 </head>
