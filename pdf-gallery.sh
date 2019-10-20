@@ -118,10 +118,10 @@ function do_convert() {
 
 	case ${INEXT} in
 		pdf)
-			pdftk ${INFILE} cat 1 output ${TMPFILE}
+			pdftk "${INFILE}" cat 1 output "${TMPFILE}"
 			RET=$?
 			if [[ ${RET} -eq 0 ]] ; then
-				convert ${TMPFILE} -adaptive-resize 400x1000 ${OUTFILE}
+				convert "${TMPFILE}" -adaptive-resize 400x1000 "${OUTFILE}"
 				RET=$?
 				if [[ ${RET} -ne 0 ]] ; then
 					log "ERROR: Unable to convert file \"${INFILE}\" (convert=${RET})"
@@ -197,13 +197,14 @@ case ${DATESORT} in
 esac
 
 while read i ; do
-	NEWFILE="${SUBDIR}/idx-$(basename $i .${EXT}).jpg"
+	BASE=$(basename "$i" .${EXT})
+	NEWFILE="${SUBDIR}/idx-${BASE}.jpg"
 	if [[ ! -f "${NEWFILE}" || ${FORCE} -eq 1 ]] ; then
 		log "INFO: Processing $i ..."
 		do_convert "$i" "${NEWFILE}"
 		if [[ $? -eq 0 ]] ; then
-			img_array[$i]=${NEWFILE}
-			img_sorted+=($i)
+			img_array[$i]="${NEWFILE}"
+			img_sorted+=("$i")
 		else
 			ERRCOUNT=$((${ERRCOUNT} + 1))
 			if [[ ${ERRCOUNT} -gt ${MAXERRORS} && ${FORCE} -eq 0 ]] ; then
@@ -213,9 +214,9 @@ while read i ; do
 		fi
 	else
 		log "INFO: Skipping $i ..."
-		img_array[$i]=${NEWFILE} && img_sorted+=($i)
+		img_array[$i]=${NEWFILE} && img_sorted+=("$i")
 	fi
-done< <(ls ${ORDER} *.${EXT})
+done< <(ls -1 ${ORDER} *.${EXT})
 
 if [[ ${#img_sorted[@]} == 0 ]] ; then
 	log "INFO: No ${EXT} files found"
