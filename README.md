@@ -3,6 +3,18 @@ Create HTML gallery from PDF files
 
 This is a very simple bash script that creates a single HTML file from all PDF documents in the current directory. The HTML file contains a gallery with thumbnails of the first page of all PDF documents. If you click on a thumbnail, the corresponding PDF file will be opened in a new browser window.
 
+All thumbnails are stored in a subdirectory called idx. This is the overall directory structure:
+```
+ ├-- my_book1.pdf
+ ├-- my_book2.pdf
+ ├-- my_book3.pdf
+ ├-- idx.html
+ ├-- idx/
+     ├-- idx-my_book1.jpg
+     ├-- idx-my_book2.jpg
+     ├-- idx-my_book3.jpg
+```
+
 ## Features
 - Sort by name or modification date
 - Reverse sort order
@@ -14,8 +26,8 @@ This is a very simple bash script that creates a single HTML file from all PDF d
 - Quiet run, suppress any output or error messages
 
 ## Requirements
-- pdftk (extract first page from PDF file)
-- ImageMagick (convert extracted first PDF page to thumbnail)
+- **pdftk** (extract first page from PDF file)
+- **ImageMagick** (convert extracted first PDF page to thumbnail)
 
 ## Usage
 ```
