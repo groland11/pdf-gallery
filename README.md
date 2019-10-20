@@ -18,7 +18,7 @@ All thumbnails are stored in a subdirectory called idx. This is the overall dire
 ## Features
 - Sort by name or modification date
 - Reverse sort order
-- Only create thumbnails of new PDF documents, or force to overwrite old thumbnails
+- Only create thumbnails of new PDF documents (saves time), or force to overwrite old thumbnails
 - Delete old thumbnails of PDF documents that no longer exist
 - Abort operation if there are too many conversion errors
 - Test dependencies and display result in help output
