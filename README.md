@@ -29,6 +29,10 @@ All thumbnails are stored in a subdirectory called idx. This is the overall dire
 - **pdftk** (extract first page from PDF file)
 - **ImageMagick** (convert extracted first PDF page to thumbnail)
 
+## Installation
+Just copy the the script somewhere in your path, e.g. /home/user/bin .
+Run "pdf-gallery.sh -h". It will tell you if there are any problems with the installation (missing dependencies, etc.).
+
 ## Usage
 ```
 Usage: pdf-gallery.sh [-m] [-r] [-f] [-k] [-e <max_errors>] [-q] [-d] [-h]
@@ -40,6 +44,21 @@ Usage: pdf-gallery.sh [-m] [-r] [-f] [-k] [-e <max_errors>] [-q] [-d] [-h]
         -q: Quiet, suppress output (no warning or error messages)
         -d: Output debug messages
         -h: Display usage, check requirements and exit
+```
+
+## Example
+```
+$ pdf-gallery.sh -m -r
+$ ~/bin/pdf-gallery.sh
+ERROR: Unable to convert file "myfile1.pdf" (pdftk=2)
+ERROR: Unable to convert file "myfile2.pdf" (pdftk=2)
+$ ls
+idx
+idx.html
+myfile1.pdf
+myfile2.pdf
+myfile3.pdf
+...
 ```
 
 ## Screenshots
