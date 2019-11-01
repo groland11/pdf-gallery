@@ -30,8 +30,8 @@ All thumbnails are stored in a subdirectory called idx. This is the overall dire
 - **ImageMagick** (convert extracted first PDF page to thumbnail)
 
 ## Installation
-Just copy the the script somewhere in your path, e.g. /home/user/bin .
-Run "pdf-gallery.sh -h". It will tell you if there are any problems with the installation (missing dependencies, etc.).
+1. Just copy the the script somewhere in your path, e.g. /home/user/bin .
+2. Run "pdf-gallery.sh -h". It will tell you if there are any problems with the installation (missing dependencies, etc.).
 
 ## Usage
 ```
