@@ -88,7 +88,7 @@ function usage() {
 function log() {
 	[[ ${QUIET} -eq 1 ]] && return
 	[[ "$1" =~ ^ERROR ]] && echo $1 1>&2 && return
-	[[ $DEBUG -eq 1 || "$1" =~ ^WARNING ]] && echo $1
+	[[ $DEBUG -eq 1 || "$1" =~ ^WARNING ]] && echo -e $1
 }
 
 # Check ImageMagick is installed and supports file conversion
@@ -118,7 +118,7 @@ function do_convert() {
 
 	case ${INEXT} in
 		pdf)
-			pdftk "${INFILE}" cat 1 output "${TMPFILE}"
+			OUT=$(pdftk "${INFILE}" cat 1 output "${TMPFILE}" 2>&1)
 			RET=$?
 			if [[ ${RET} -eq 0 ]] ; then
 				convert "${TMPFILE}" -define jpeg:size=1200x1500 -thumbnail '400x500' -background white -alpha remove "${OUTFILE}"
@@ -128,6 +128,7 @@ function do_convert() {
 				fi
 			else
 				log "ERROR: Unable to convert file \"${INFILE}\" (pdftk=${RET})"
+				log "DEBUG:\n${OUT}"
 			fi
 			;;
 		*)
