@@ -49,7 +49,6 @@ Usage: pdf-gallery.sh [-m] [-r] [-f] [-k] [-e <max_errors>] [-q] [-d] [-h]
 ## Example
 ```
 $ pdf-gallery.sh -m -r
-$ ~/bin/pdf-gallery.sh
 ERROR: Unable to convert file "myfile1.pdf" (pdftk=2)
 ERROR: Unable to convert file "myfile2.pdf" (pdftk=2)
 $ ls
