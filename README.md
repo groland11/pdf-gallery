@@ -32,6 +32,8 @@ All thumbnails are stored in a subdirectory called idx. This is the overall dire
 ## Installation
 1. Just copy the the script somewhere in your path, e.g. /home/user/bin .
 2. Run "pdf-gallery.sh -h". It will tell you if there are any problems with the installation (missing dependencies, etc.).
+3. Enable PDF file conversion for ImageMagick. Many Linux distributions disable this function for security reasons by default. If you are confident that PDF file conversion does not impose any security threats to your system, comment the following line in /etc/ImageMagick-6/policy.xml by enclosing it with "<!--" and "-->" markers:
+<!-- <policy domain="coder" rights="none" pattern="PDF" /> -->
 
 ## Usage
 ```

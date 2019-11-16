@@ -36,7 +36,7 @@ FORCE=0
 # Display help message (parameter)
 USAGE=0
 # Max. number of conversion errors before abortion (parameter)
-MAXERRORS=3
+MAXERRORS=5
 # Keep old thumbnails where document does not exist anymore (parameter)
 KEEPTNAILS=0
 # Reverse sort order of document files (parameter)
@@ -76,7 +76,7 @@ function usage() {
 	echo -e "\t-m: Sort by ${EXT} file modification date (newest first)"
 	echo -e "\t-r: Reverse sort order"
 	echo -e "\t-f: Force creation of thumbnails even if they already exist"
-	echo -e "\t-e <max_errors>: Maximum number of errors for creating thumbnails"
+	echo -e "\t-e <max_errors>: Maximum number of errors for creating thumbnails (default: ${MAXERRORS})"
 	echo -e "\t-k: Keep old thumbnails that are associated to vanished ${EXT} files"
 	echo -e "\t-q: Quiet, suppress output (no warning or error messages)"
 	echo -e "\t-d: Output debug messages"
@@ -121,10 +121,12 @@ function do_convert() {
 			OUT=$(pdftk "${INFILE}" cat 1 output "${TMPFILE}" 2>&1)
 			RET=$?
 			if [[ ${RET} -eq 0 ]] ; then
-				convert "${TMPFILE}" -define jpeg:size=1200x1500 -thumbnail '400x500' -background white -alpha remove "${OUTFILE}"
+				#convert "${TMPFILE}" -define jpeg:size=1200x1500 -thumbnail '400x500' -background white -alpha remove "${OUTFILE}"
+				OUT=$(convert -density 300 "${TMPFILE}" -define jpeg:size=1200x1500 -geometry x500 -background white -alpha remove -trim "${OUTFILE}" 2>&1)
 				RET=$?
 				if [[ ${RET} -ne 0 ]] ; then
 					log "ERROR: Unable to convert file \"${INFILE}\" (convert=${RET})"
+					log "DEBUG:\n${OUT}"
 				fi
 			else
 				log "ERROR: Unable to convert file \"${INFILE}\" (pdftk=${RET})"
@@ -208,7 +210,7 @@ while read i ; do
 			img_sorted+=("$i")
 		else
 			ERRCOUNT=$((${ERRCOUNT} + 1))
-			if [[ ${ERRCOUNT} -gt ${MAXERRORS} && ${FORCE} -eq 0 ]] ; then
+			if [[ ${ERRCOUNT} -ge ${MAXERRORS} && ${FORCE} -eq 0 ]] ; then
 				log "ERROR: Too many errors -> aborting (try using -f command line option)"
 				exit 2
 			fi
@@ -281,5 +283,7 @@ for i in "${img_sorted[@]}"; do
 done
 echo -e "\t</tr>\n</table></body>\n</html>\n" >>${IDXHTML}
 
-log "OK"
 rm -rf ${TMPFILE}
+log "OK"
+[[ $ERRCOUNT -ne 0 ]] && exit 1
+exit 0
