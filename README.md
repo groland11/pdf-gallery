@@ -30,7 +30,7 @@ All thumbnails are stored in a subdirectory called idx. This is the overall dire
 - **ImageMagick** (convert extracted first PDF page to thumbnail)
 
 ## Download
-Latest release: https://github.com/groland11/pdf-gallery/archive/v1.0.tar.gz
+- [Release 1.0](https://github.com/groland11/pdf-gallery/archive/v1.0.tar.gz)
 
 ## Installation
 1. Just copy the the script somewhere in your path, e.g. /home/user/bin .
