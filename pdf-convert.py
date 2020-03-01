@@ -36,7 +36,7 @@ import time
 args = None
 
 
-def get_commandline():
+def get_commandline() -> argparse.Namespace:
     '''Parse command line arguments
 
     Parameters
