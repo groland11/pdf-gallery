@@ -43,6 +43,11 @@ KEEPTNAILS=0
 REVERSESORT=0
 # Sort document files by modification date (parameter)
 DATESORT=0
+# Number of files successfully converted
+FILECOUNT=0
+# Overall number of files processed (for statistics)
+FILESTATCOUNT=0
+FILEDELCOUNT=0
 # Quiet, suppress output, no warning or error messages (parameter)
 QUIET=0
 # Output debug messages to standard output (parameter)
@@ -88,7 +93,21 @@ function usage() {
 function log() {
 	[[ ${QUIET} -eq 1 ]] && return
 	[[ "$1" =~ ^ERROR ]] && echo $1 1>&2 && return
-	[[ $DEBUG -eq 1 || "$1" =~ ^WARNING ]] && echo -e $1
+	[[ $DEBUG -eq 1 || "$1" =~ ^WARNING || "$1" =~ ^STATS ]] && echo -e $1
+}
+
+# Escape strings for HTML output
+function urlEscape() {
+	local s
+
+	s="${1//&/%26}"
+	s="${s//</%3C}"
+	s="${s//>/%3E}"
+	s="${s//' '/%20}"
+	s="${s//'#'/%23}"
+	s="${s//'$'/%24}"
+
+	printf -- %s "${s}"
 }
 
 # Check ImageMagick is installed and supports file conversion
@@ -119,6 +138,7 @@ function do_convert() {
 	case ${INEXT} in
 		pdf)
 			OUT=$(pdftk "${INFILE}" cat 1 output "${TMPFILE}" 2>&1)
+			FILESTATCOUNT=$((${FILESTATCOUNT} + 1))
 			RET=$?
 			if [[ ${RET} -eq 0 ]] ; then
 				#convert "${TMPFILE}" -define jpeg:size=1200x1500 -thumbnail '400x500' -background white -alpha remove "${OUTFILE}"
@@ -127,6 +147,8 @@ function do_convert() {
 				if [[ ${RET} -ne 0 ]] ; then
 					log "ERROR: Unable to convert file \"${INFILE}\" (convert=${RET})"
 					log "DEBUG:\n${OUT}"
+				else
+						FILECOUNT=$((${FILECOUNT} + 1))
 				fi
 			else
 				log "ERROR: Unable to convert file \"${INFILE}\" (pdftk=${RET})"
@@ -199,6 +221,9 @@ case ${DATESORT} in
 		;;
 esac
 
+# Start timing
+STARTTIME=$(date +%s)
+
 while read i ; do
 	BASE=$(basename "$i" .${EXT})
 	NEWFILE="${SUBDIR}/idx-${BASE}.jpg"
@@ -226,6 +251,16 @@ if [[ ${#img_sorted[@]} == 0 ]] ; then
 	exit 0
 fi
 
+# Statistics
+# TODO: min, max
+AVERAGE=0
+ENDTIME=$(date +%s)
+ELAPSED=$((${ENDTIME} - ${STARTTIME}))
+if [[ ${FILECOUNT} != 0 ]] ; then
+	#AVERAGE=$((${ELAPSED} / ${FILESTATCOUNT}))
+	AVERAGE=$(echo "scale=2; ${ELAPSED} / ${FILESTATCOUNT}" | bc)
+fi
+
 # Delete old thumbnails
 if [[ $KEEPTNAILS -eq 0 ]] ; then
 	while read TNAIL ; do
@@ -235,7 +270,7 @@ if [[ $KEEPTNAILS -eq 0 ]] ; then
 				FOUND=1
 			fi
 		done
-		[[ ${FOUND} -ne 1 ]] &&	log "WARNING: Deleting old thumbnail ${TNAIL}" && rm -f "${TNAIL}"
+		[[ ${FOUND} -ne 1 ]] &&	log "WARNING: Deleting old thumbnail ${TNAIL}" && rm -f "${TNAIL}" && FILEDELCOUNT=$((${FILEDELCOUNT} + 1))
 	done< <(ls ${SUBDIR}/*.jpg)
 fi
 
@@ -274,7 +309,8 @@ EOF
 COLID=0
 echo -e "<table>\n\t<tr>\n" >>${IDXHTML}
 for i in "${img_sorted[@]}"; do 
-	echo -e "\t\t<td><a target=\"_blank\" href=\"$i\"><img src=\"${img_array[$i]}\"></img></a><br/>$i</td>\n" >>${IDXHTML} 
+	IMGSRC="$(urlEscape "${img_array[$i]}")"
+	echo -e "\t\t<td><a target=\"_blank\" href=\"$i\"><img src=\"${IMGSRC}\"></img></a><br/>$i</td>\n" >>${IDXHTML} 
 	COLID=$((${COLID}+1))
 	if [[ ${COLID} -ge 4 ]] ; then
 		echo -e "\t</tr>\n\t<tr>\n" >>${IDXHTML}
@@ -285,5 +321,7 @@ echo -e "\t</tr>\n</table></body>\n</html>\n" >>${IDXHTML}
 
 rm -rf ${TMPFILE}
 log "OK"
+log "STATS: Elapsed time ${ELAPSED} seconds; ${FILECOUNT} converted files (avg. ${AVERAGE} sec/file); ${FILEDELCOUNT} deleted old thumbnails"
+
 [[ $ERRCOUNT -ne 0 ]] && exit 1
 exit 0
